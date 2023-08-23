@@ -1,6 +1,35 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { sampleUserData } from '../../../utils/sample-data'
 
+type ErrorWithMessage = {
+  message: string
+}
+
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as Record<string, unknown>).message === 'string'
+  )
+}
+
+function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
+  if (isErrorWithMessage(maybeError)) return maybeError
+
+  try {
+    return new Error(JSON.stringify(maybeError))
+  } catch {
+    // fallback in case there's an error stringifying the maybeError
+    // like with circular references for example.
+    return new Error(String(maybeError))
+  }
+}
+
+function getErrorMessage(error: unknown) {
+  return toErrorWithMessage(error).message
+}
+
 const handler = (_req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (!Array.isArray(sampleUserData)) {
@@ -8,8 +37,8 @@ const handler = (_req: NextApiRequest, res: NextApiResponse) => {
     }
 
     res.status(200).json(sampleUserData)
-  } catch (err: any) {
-    res.status(500).json({ statusCode: 500, message: err.message })
+  } catch (err: unknown) {
+    res.status(500).json({ statusCode: 500, message: getErrorMessage(err) })
   }
 }
 
