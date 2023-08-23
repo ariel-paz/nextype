@@ -15,9 +15,6 @@ export function Main() {
           <Tabs.Tab value="input">Carga</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="dashboard">
-          {/* <Title className={classes.title} align="center" mt={100}>
-            Hello World!
-          </Title> */}
           <Dashboard />
         </Tabs.Panel>
         <Tabs.Panel value="input">
