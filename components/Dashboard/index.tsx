@@ -10,8 +10,9 @@ import {
 } from '@mantine/core';
 import { collection, getDocs } from 'firebase/firestore';
 import { IconRefresh } from '@tabler/icons';
-import { BarChart } from '../BarChart/BarChart';
 import { firestore } from '../../utils/firebase';
+import { PieChart } from '../Charts/PieChart/PieChart';
+import { formatMoney } from '../../utils/formatter/money';
 
 export function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +24,6 @@ export function Dashboard() {
     getDocs(ref).then((querySnapshot) => {
       const postData: any = [];
       querySnapshot.forEach((doc) => postData.push({ ...doc.data() }));
-      console.log(postData);
       setData(postData);
       setIsLoading(false);
     });
@@ -52,15 +52,14 @@ export function Dashboard() {
             Presupuesto
           </Text>
           <Text fz="md" ta="center">
-            {data
-              .reduce((acumulador, actual) => {
+            {formatMoney(
+              data.reduce((acumulador, actual) => {
                 if (actual.type === 'presupuesto') {
                   return acumulador + actual.money;
                 }
                 return acumulador;
               }, 0)
-              .toString()
-              .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, '.')}
+            )}
           </Text>
         </Paper>
         <Paper shadow="md" radius="lg" p="lg" withBorder>
@@ -68,20 +67,19 @@ export function Dashboard() {
             Gastos
           </Text>
           <Text fz="md" ta="center">
-            {data
-              .reduce((acumulador, actual) => {
+            {formatMoney(
+              data.reduce((acumulador, actual) => {
                 if (actual.type === 'gasto') {
                   return acumulador + actual.money;
                 }
                 return acumulador;
               }, 0)
-              .toString()
-              .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, '.')}
+            )}
           </Text>
         </Paper>
       </SimpleGrid>
       <Container p="xs">
-        <BarChart />
+        <PieChart data={data} />
       </Container>
       <SimpleGrid cols={2} p="xs">
         <Paper shadow="md" radius="lg" p="lg" withBorder>
@@ -89,8 +87,8 @@ export function Dashboard() {
             Resto
           </Text>
           <Text fz="md" ta="center">
-            {data
-              .reduce((acumulador, actual) => {
+            {formatMoney(
+              data.reduce((acumulador, actual) => {
                 if (actual.type === 'ingreso') {
                   return acumulador + actual.money;
                 }
@@ -98,12 +96,11 @@ export function Dashboard() {
                   return acumulador - actual.money;
                 }
                 if (actual.type === 'presupuesto') {
-                  return (actual.money * 0.7) - acumulador;
+                  return actual.money * 0.7 - acumulador;
                 }
                 return acumulador;
               }, 0)
-              .toString()
-              .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, '.')}
+            )}
           </Text>
         </Paper>
         <Paper shadow="md" radius="lg" p="lg" withBorder>
@@ -111,15 +108,14 @@ export function Dashboard() {
             Ahorro
           </Text>
           <Text fz="md" ta="center">
-            {data
-              .reduce((acumulador, actual) => {
+            {formatMoney(
+              data.reduce((acumulador, actual) => {
                 if (actual.type === 'presupuesto') {
                   return acumulador + actual.money * 0.3;
                 }
                 return acumulador;
               }, 0)
-              .toString()
-              .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, '.')}
+            )}
           </Text>
         </Paper>
       </SimpleGrid>

@@ -11,14 +11,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export const options = {
   indexAxis: 'y' as const,
@@ -34,7 +27,7 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Gastos por rubro',
+      text: 'A',
     },
   },
 };
@@ -56,9 +49,16 @@ export const data = {
       borderColor: 'rgb(53, 162, 235)',
       backgroundColor: 'rgba(53, 162, 235, 0.5)',
     },
+    {
+      label: 'Dataset 2',
+      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
+      borderColor: 'rgb(13, 16, 25)',
+      backgroundColor: 'rgba(13, 16, 25, 0.5)',
+    },
   ],
 };
 
-export function BarChart() {
+export function BarChart(props: { data }) {
+  // const { data } = props;
   return <Bar options={options} data={data} />;
 }
